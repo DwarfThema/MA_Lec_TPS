@@ -16,6 +16,9 @@ public class playerMove : MonoBehaviour
     CharacterController cc;
 
     Vector3 dir;
+    public float gravity = -9.81f;
+    public float jumpPower = 10;
+    float yVelocity;
 
     // Start is called before the first frame update
     void Start()
@@ -26,13 +29,28 @@ public class playerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            yVelocity = jumpPower;
+        }
 
         Vector3 dir = Vector3.right * h + Vector3.forward * v;
         dir.Normalize();
 
-        transform.position += dir * speed * Time.deltaTime;
+        //캐릭터 컨트롤러 사용하면 하늘로 그냥 날아가버린다. 중력을 적용하자.
+        dir = Camera.main.transform.TransformDirection(dir);
+        yVelocity += gravity * Time.deltaTime;
+        dir.y = yVelocity;
+
+        //수직항력 구현
+        if(cc.isGrounded){
+            yVelocity = 0;
+        }
+
+        cc.Move(dir * speed * Time.deltaTime);
+        //transform.position += dir * speed * Time.deltaTime;
     }
 }
