@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// »ç¿ëÀÚÀÇ ¸¶¿ì½º ÀÔ·Â¿¡ µû¶ó ¹°Ã¼¸¦ »óÇÏÁÂ¿ì·Î È¸Àü½ÃÅ°°í ½Í´Ù.
+// ÇÊ¿ä¼Ó¼º : È¸Àü¼Óµµ
 public class CamRotate : MonoBehaviour
 {
-    //í•„ìš”ì†ì„± : íšŒì „ì†ë„
-    public float rotSpeed = 205f;
+    // ÇÊ¿ä¼Ó¼º : È¸Àü¼Óµµ
+    public float rotSpeed = 205;
+    // ¿ì¸®°¡ Á÷Á¢ °¢µµ¸¦ °ü¸®ÇÏÀÚ
+    float mx;
+    float my;
 
-    // ìš°ë¦¬ê°€ ì§ì ‘ ê°ë„ë¥¼ ê´€ë¦¬í•˜ì
-    public float mx;
-    public float my;
-
-    // Start is called before the first frame update
     void Start()
     {
-        // ì‹œì‘í•  ë•Œ ì‚¬ìš©ìê°€ ì •í•´ì¤€ ê°ë„ ê°’ìœ¼ë¡œ ì„¸íŒ…í•˜ê¸°
+        // ½ÃÀÛÇÒ ¶§ »ç¿ëÀÚ°¡ Á¤ÇØÁØ °¢µµ °ªÀ¸·Î ¼¼ÆÃ
         mx = transform.eulerAngles.y;
         my = -transform.eulerAngles.x;
     }
@@ -22,25 +22,21 @@ public class CamRotate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // ì‚¬ìš©ìì˜ ë§ˆìš°ìŠ¤ ì…ë ¥ì— ë”°ë¼ ë¬¼ì²´ë¥¼ ìƒí•˜ì¢Œìš°ë¡œ íšŒì „ì‹œí‚¤ê³  ì‹¶ë‹¤.
-        // 3. ì‚¬ìš©ìì˜ ì…ë ¥ì— ë”°ë¼
+        // »ç¿ëÀÚÀÇ ¸¶¿ì½º ÀÔ·Â¿¡ µû¶ó ¹°Ã¼¸¦ »óÇÏÁÂ¿ì·Î È¸Àü½ÃÅ°°í ½Í´Ù.
+        // 1. »ç¿ëÀÚÀÇ ÀÔ·Â¿¡µû¶ó
         float h = Input.GetAxis("Mouse X");
         float v = Input.GetAxis("Mouse Y");
 
         mx += h * rotSpeed * Time.deltaTime;
         my += v * rotSpeed * Time.deltaTime;
-
-        // -60 ~ 60 ìœ¼ë¡œ ê°ë„ ì œí•œ ê±¸ê¸°
-        // xì¶• -> pitch, y -> Yaw, z -> Roll
+        // -60 ~ 60 À¸·Î °¢µµ Á¦ÇÑ°É±â
+        // xÃà -> pitch, y -> Yaw, z -> Roll
         my = Mathf.Clamp(my, -60, 60);
 
-        transform.eulerAngles = new Vector3(-my,mx,0);
-        
-        // 2. ë°©í–¥ì´ í•„ìš”
-        //Vector3 dir = new Vector3(-v,h,0);
-        
-        // 1. íšŒì „í•˜ê³  ì‹¶ë‹¤.
+        transform.eulerAngles = new Vector3(-my, mx, 0);
+        // 2. ¹æÇâÀÌÇÊ¿ä
+        //Vector3 dir = new Vector3(-v, h, 0);
+        // 3. È¸ÀüÇÏ°í ½Í´Ù.
         //transform.eulerAngles += dir * rotSpeed * Time.deltaTime;
-
     }
 }

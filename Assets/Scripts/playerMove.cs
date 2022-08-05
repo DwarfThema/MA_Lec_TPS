@@ -2,25 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-    //ì‚¬ìš©ì ì…ë ¥ì— ë”°ë¼ ì•ë’¤ ì¢Œìš°ë¡œ ì´ë™í•˜ê³  ì‹¶ë‹¤.
-    //í•„ìš”ì†ì„± : ì´ë™ì†ë„
-
-    //CharacterController ë¥¼ ì´ìš©í•´ ì´ë™ì‹œí‚¤ê³  ì‹¶ë‹¤.
-    // í•„ìš”ì†ì„± : Character Controller
-public class playerMove : MonoBehaviour
+// »ç¿ëÀÚ ÀÔ·Â¿¡ µû¶ó ¾ÕµÚÁÂ¿ì·Î ÀÌµ¿ÇÏ°í ½Í´Ù.
+// ÇÊ¿ä¼Ó¼º : ÀÌµ¿¼Óµµ
+// CharacterController ¸¦ ÀÌ¿ëÇØ ÀÌµ¿½ÃÅ°°í ½Í´Ù.
+// ÇÊ¿ä¼Ó¼º : Character Controller
+// Áß·ÂÀ» Àû¿ë½ÃÅ°°í ½Í´Ù.
+// ÇÊ¿ä¼Ó¼º : Áß·Â°ª, ¼öÁ÷¼Óµµ
+// »ç¿ëÀÚ°¡ Á¡ÇÁ¹öÆ°À» ´©¸£¸é Á¡ÇÁÇÏ°í ½Í´Ù.
+// ÇÊ¿ä¼Ó¼º : Á¡ÇÁÆÄ¿ö
+public class PlayerMove : MonoBehaviour
 {
-    // í•„ìš”ì†ì„± : ì´ë™ì†ë”
-    public float speed = 5f;
-
-    //í•„ìš”ì†ì„± : Character Controller
+    // ÇÊ¿ä¼Ó¼º : ÀÌµ¿¼Óµµ
+    public float speed = 5;
+    // ÇÊ¿ä¼Ó¼º : Character Controller
     CharacterController cc;
 
-    Vector3 dir;
-    public float gravity = -9.81f;
-    public float jumpPower = 10;
-    float yVelocity;
+    // ÇÊ¿ä¼Ó¼º : Áß·Â°ª, ¼öÁ÷¼Óµµ
+    public float gravity = -20;
+    float yVelocity = 0;
+    // ÇÊ¿ä¼Ó¼º : Á¡ÇÁÆÄ¿ö
+    public float jumpPower = 5;
 
-    // Start is called before the first frame update
+    // Á¡ÇÁÁßÀÎÁö ¿©ºÎ
+    bool isJumping = false;
+    int isJumpingcount = 0;
+    public int maxJumpCount = 2;
     void Start()
     {
         cc = GetComponent<CharacterController>();
@@ -29,28 +35,40 @@ public class playerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // »ç¿ëÀÚ ÀÔ·Â¿¡ µû¶ó ¾ÕµÚÁÂ¿ì·Î ÀÌµ¿ÇÏ°í ½Í´Ù.
+        // 1. »ç¿ëÀÚÀÇ ÀÔ·Â¿¡ µû¶ó
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
-
-        if (Input.GetButtonDown("Jump"))
-        {
-            yVelocity = jumpPower;
-        }
-
-        Vector3 dir = Vector3.right * h + Vector3.forward * v;
-        dir.Normalize();
-
-        //ìºë¦­í„° ì»¨íŠ¸ë¡¤ëŸ¬ ì‚¬ìš©í•˜ë©´ í•˜ëŠ˜ë¡œ ê·¸ëƒ¥ ë‚ ì•„ê°€ë²„ë¦°ë‹¤. ì¤‘ë ¥ì„ ì ìš©í•˜ì.
+        // 2. ¹æÇâÀÌ ÇÊ¿ä
+        Vector3 dir = new Vector3(h, 0, v);
+        // -> ³»°¡ ¹Ù¶óº¸´Â ¹æÇâÀ» ±âÁØÀ¸·Î °¡°í½Í´Ù.
         dir = Camera.main.transform.TransformDirection(dir);
+        // v = v0 + at
+        // ¼öÁ÷¼Óµµ ±¸ÇÏ±â
         yVelocity += gravity * Time.deltaTime;
-        dir.y = yVelocity;
 
-        //ìˆ˜ì§í•­ë ¥ êµ¬í˜„
-        if(cc.isGrounded){
+        // ¸¸¾à ¹Ù´Ú¿¡ ´ê¾ÆÀÖ´Ù¸é
+        if (cc.collisionFlags == CollisionFlags.Below)
+        {
+            // -> ¼öÁ÷¼Óµµ¸¦ 0À¸·Î ÇÏ°í ½Í´Ù.
             yVelocity = 0;
+            //isJumping = false;
+            isJumpingcount = 0;
         }
 
+        // Á¡ÇÁ¸¦ ¾ÈÇÏ°í ÀÖÀ» ¶§ ±×¸®°í
+        // »ç¿ëÀÚ°¡ Á¡ÇÁ¹öÆ°À» ´©¸£¸é Á¡ÇÁÇÏ°í ½Í´Ù.
+        if (Input.GetButtonDown("Jump") && isJumpingcount < maxJumpCount)
+        {
+            // -> ¼öÁ÷¼Óµµ¸¦ º¯°æÇÏ°í ½Í´Ù.
+            yVelocity = jumpPower;
+            //isJumping = true;
+            isJumpingcount++;
+        }
+
+        dir.y = yVelocity;
+        // 3. ÀÌµ¿ÇÏ°í ½Í´Ù.
+        // P = P0 + vt
         cc.Move(dir * speed * Time.deltaTime);
-        //transform.position += dir * speed * Time.deltaTime;
     }
 }
