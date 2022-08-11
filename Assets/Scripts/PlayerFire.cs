@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// ì‚¬ìš©ìê°€ ë°œì‚¬ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ ì´ì•Œì„ ë°œì‚¬í•˜ê³  ì‹¶ë‹¤.
-// í•„ìš”ì†ì„± : ì´ì•Œê³µì¥, ì´êµ¬
+// »ç¿ëÀÚ°¡ ¹ß»ç¹öÆ°À» ´©¸£¸é ÃÑ¾ËÀ» ¹ß»çÇÏ°í ½Í´Ù.
+// ÇÊ¿ä¼Ó¼º : ÃÑ¾Ë°øÀå, ÃÑ±¸
 public class PlayerFire : MonoBehaviour
 {
-    // í•„ìš”ì†ì„± : ì´ì•Œê³µì¥, ì´êµ¬
+    // ÇÊ¿ä¼Ó¼º : ÃÑ¾Ë°øÀå, ÃÑ±¸
     public GameObject bulletFactory;
     public Transform firePosition;
-    // ì´ì•ŒíŒŒí¸
+    // ÃÑ¾ËÆÄÆí
     public Transform bulletImpact;
     ParticleSystem bulletPS;
     AudioSource bulletAudio;
@@ -25,8 +25,8 @@ public class PlayerFire : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // ì‚¬ìš©ìê°€ ë°œì‚¬ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ ì´ì•Œì„ ë°œì‚¬í•˜ê³  ì‹¶ë‹¤.
-        // 1. ì‚¬ìš©ìê°€ ë°œì‚¬ë²„íŠ¼ì„ ëˆŒë €ìœ¼ë‹ˆê¹Œ
+        // »ç¿ëÀÚ°¡ ¹ß»ç¹öÆ°À» ´©¸£¸é ÃÑ¾ËÀ» ¹ß»çÇÏ°í ½Í´Ù.
+        // 1. »ç¿ëÀÚ°¡ ¹ß»ç¹öÆ°À» ´­·¶À¸´Ï±î
         if (Input.GetButtonDown("Fire1"))
         {
             bulletAudio.Stop();
@@ -38,44 +38,45 @@ public class PlayerFire : MonoBehaviour
 
     void ShootRay()
     {
-        // Ray ë¥¼ ì´ìš©í•´ì„œ ì´ì•Œì„ ë°œì‚¬í•˜ê³  ì‹¶ë‹¤.
-        // Ray í•„ìš”
+        // Ray ¸¦ ÀÌ¿ëÇØ¼­ ÃÑ¾ËÀ» ¹ß»çÇÏ°í ½Í´Ù.
+        // Ray ÇÊ¿ä
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         // RaycastHit
         RaycastHit hitInfo;
 
-        // í”Œë ˆì´ì–´ë§Œ ë¹¼ê³  ì¶©ëŒí•˜ê²Œ í•˜ê³  ì‹¶ë‹¤.
+        // ÇÃ·¹ÀÌ¾î¸¸ »©°í Ãæµ¹ÇÏ°Ô ÇÏ°í ½Í´Ù.
         int layer = 1 << gameObject.layer;
 
-        // Ray ë˜ì§„ë‹¤.
-        // -> ë§Œì•½ ì¶©ëŒí–ˆë‹¤ë©´
+        // Ray ´øÁø´Ù.
+        // -> ¸¸¾à Ãæµ¹Çß´Ù¸é
         if (Physics.Raycast(ray, out hitInfo, 1000, ~layer))
         {
-            // -> ë¶€ë”ªíŒ ì§€ì ì— íŒŒí¸íš¨ê³¼ í‘œì‹œ
-            // 1. íŒŒí¸ì´ ë¶€ë”ªíŒ ì§€ì ìœ¼ë¡œ ìœ„ì¹˜
+            // -> ºÎµúÈù ÁöÁ¡¿¡ ÆÄÆíÈ¿°ú Ç¥½Ã
+            // 1. ÆÄÆíÀÌ ºÎµúÈù ÁöÁ¡À¸·Î À§Ä¡
             bulletImpact.position = hitInfo.point;
-            // ë¶€ë”ªíŒ ì§€ì ì´ í–¥í•˜ëŠ” ë°©í–¥ìœ¼ë¡œ íŒŒí¸ì´ íŠ€ë„ë¡
+            // ºÎµúÈù ÁöÁ¡ÀÌ ÇâÇÏ´Â ¹æÇâÀ¸·Î ÆÄÆíÀÌ Æ¢µµ·Ï
             bulletImpact.forward = hitInfo.normal;
-            // 2. íš¨ê³¼ ì¬ìƒ
+            // 2. È¿°ú Àç»ı
             bulletPS.Stop();
             bulletPS.Play();
 
-            // ë§Œì•½ ë§ì€ ë…€ì„ì´ Enemy ë¼ë©´
+            // ¸¸¾à ¸ÂÀº ³à¼®ÀÌ Enemy ¶ó¸é
             Enemy enemy = hitInfo.transform.GetComponent<Enemy>();
             if (enemy)
             {
-                // -> í”¼ê²© ì´ë²¤íŠ¸ë¥¼ í˜¸ì¶œí•˜ì
-                enemy.OnDamageProcess();
+                // -> ÇÇ°İ ÀÌº¥Æ®¸¦ È£ÃâÇÏÀÚ
+                enemy.OnDamageProcess(ray.direction);
+
             }
         }
     }
 
     private void ShootBullet()
     {
-        // 2. ì´ì•Œì´ í•„ìš”
+        // 2. ÃÑ¾ËÀÌ ÇÊ¿ä
         GameObject bullet = Instantiate(bulletFactory);
-        // 3. ì´ì•Œì„ ë°œì‚¬í•˜ê³  ì‹¶ë‹¤.
+        // 3. ÃÑ¾ËÀ» ¹ß»çÇÏ°í ½Í´Ù.
         bullet.transform.position = firePosition.position;
         bullet.transform.forward = firePosition.forward;
     }
